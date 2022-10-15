@@ -1,19 +1,24 @@
 <template>
-    <div class="lift" :style="{
-        transform: `translateY(-${heightAboveGround}px)`
-    }">
+    <div 
+        class="lift" 
+        :style="{
+            transform: `translateY(-${heightAboveGround}px)`
+        }"
+        :class="{ waiting: blink }"
+        ref="lift"
+    >
         <div class="floorCounter">{{ getCounter }}</div>
         <div class="arrow">
             <img 
                 class="arrow-up" 
                 :style="{
-                    display: up == true ? 'block' : 'none'
+                    display: up === true ? 'block' : 'none'
                 }" 
                 src="@/assets/up-arrow.png">
             <img 
                 class="arrow-down"
                 :style="{
-                    display: down == true ? 'block' : 'none'
+                    display: down === true ? 'block' : 'none'
                 }" 
                 src="@/assets/down-arrow.png">
         </div>
@@ -26,7 +31,8 @@
         props: {
             heightAboveGround: Number,
             up: Boolean,
-            down: Boolean
+            down: Boolean,
+            blink: Boolean
         },
         methods: {
             
@@ -48,7 +54,9 @@
         bottom: 0;
         left: 3px;
         border-radius: 5px;
-        animation: blink 1000ms infinite
+    }
+    .waiting {
+        animation: blink 1000ms infinite;
     }
     .floorCounter {
         width: 20px;

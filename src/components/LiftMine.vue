@@ -28,7 +28,7 @@
             ></button>
         </div>
 
-        <LiftBox :heightAboveGround="heightAboveGround" :up="up" :down="down"/>
+        <LiftBox :heightAboveGround="heightAboveGround" :up="up" :down="down" :blink="blink"/>
     </div>
 </template>
 
@@ -40,11 +40,12 @@
     export default {
         data() {
             return {
-                floorCount: 10,
+                floorCount: 5,
                 heightAboveGround: 0,
                 up: false,
                 down: false,
-                list: []
+                list: [],
+                blink: false
             }
         },
         methods: {
@@ -83,21 +84,26 @@
                     // actions...
 
                         let DestinationFloor = (id - 1) * 100
-
                         let floor = this.heightAboveGround
 
                         if (this.heightAboveGround < DestinationFloor) {
 
                             let timerUp = setInterval(() => {
-
                                 this.up = true
 
                                 if(this.heightAboveGround !== DestinationFloor) {
                                     floor += 2
                                 } else {
                                     this.up = false
-                                    console.log('end', id)
-                                    resolve()
+                                    this.blink = true
+
+                                    setTimeout(() => {
+                                        this.blink = false
+                                        console.log('setTimeout сработал')
+                                        console.log('end', id)
+                                        resolve()
+                                    }, 3000)
+                                    
                                     clearInterval(timerUp)
                                 }
                                 
@@ -114,10 +120,17 @@
                                     floor -= 2
                                 } else {
                                     this.down = false
-                                    
-                                    console.log('end', id)
-                                    resolve()
+                                    this.blink = true
+
+                                    setTimeout(() => {
+                                        this.blink = false
+                                        console.log('setTimeout сработал')
+                                        console.log('end', id)
+                                        resolve();
+                                    }, 3000);
+
                                     clearInterval(timerDown)
+                                    
                                 }
                                 
                                 this.heightAboveGround = floor
