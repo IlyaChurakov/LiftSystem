@@ -7,7 +7,7 @@
             :style="{
                 bottom: `${setPlaceFloorBtn[btn - 1]}px`
             }"
-            @click="changeFloor(btn)"
+            @click="compareLifts(btn)"
         ></button>
     </div>
 </template>
@@ -15,14 +15,30 @@
 <script>
     export default {
         name: 'LiftButtons',
+        data() {
+            return {
+                liftIndex: [...this.heightAboveGround],
+                indexOfClosestLift: undefined
+            }
+        },
         props: {
             floorCount: Number,
             changeFloor: Function,
-            inputValue: Function
+            inputValue: Function,
+            heightAboveGround: Array
         },
         methods: {
-            input(item) {
-                console.log(item)
+            compareLifts(btn) {
+                let btnHeightAboveGround = (btn - 1) * 100
+                let arr = [...this.heightAboveGround]
+                let closest = arr.sort( (a, b) => Math.abs(btnHeightAboveGround - a) - Math.abs(btnHeightAboveGround - b) )[0];
+                let idx = this.heightAboveGround.indexOf(closest)
+
+                console.log(btn, this.heightAboveGround)
+                
+                this.indexOfClosestLift = idx
+
+                this.changeFloor(btn, this.indexOfClosestLift)
             }
         },
         computed: {

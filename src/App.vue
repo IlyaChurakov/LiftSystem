@@ -1,6 +1,21 @@
 <template>
-	<LiftMine :floorCount="floorCount" :heightAboveGround="heightAboveGround" :up="up" :down="down" :blink="blink"/>
-	<LiftButtons :changeFloor="changeFloor" :inputValue="inputValue" :floorCount="floorCount"/>
+	<LiftMine 
+		:floorCount="floorCount" 
+		:heightAboveGround="heightAboveGround[0]" 
+		:up="up" 
+		:down="down" 
+		:blink="blink"/>
+	<LiftMine 
+		:floorCount="floorCount" 
+		:heightAboveGround="heightAboveGround[1]" 
+		:up="up" 
+		:down="down" 
+		:blink="blink"/>
+	<LiftButtons 
+		:changeFloor="changeFloor" 
+		:inputValue="inputValue" 
+		:floorCount="floorCount"
+		:heightAboveGround="heightAboveGround"/>
 </template>
 
 <script>
@@ -14,10 +29,10 @@ export default {
 	data() {
 		return {
 			floorCount: 6,
-			heightAboveGround: 0,
+			liftCount: 2,
+			heightAboveGround: [0, 0],
 			up: false,
 			down: false,
-			list: [],
 			blink: false
 		}
 	},
@@ -33,22 +48,19 @@ export default {
 	computed: {
 		changeFloor() {
 
-			console.log('asdasd')
-
-			return createQueue((id) => {
+			return createQueue((id, liftIndex) => {
 				console.log("start", id);
 				return new Promise((resolve) => {
 				// actions...
-
 					let DestinationFloor = (id - 1) * 100
-					let floor = this.heightAboveGround
+					let floor = this.heightAboveGround[liftIndex]
 
-					if (this.heightAboveGround < DestinationFloor) {
+					if (this.heightAboveGround[liftIndex] < DestinationFloor) {
 
 						let timerUp = setInterval(() => {
 							this.up = true
 
-							if(this.heightAboveGround !== DestinationFloor) {
+							if(this.heightAboveGround[liftIndex] !== DestinationFloor) {
 								floor += 2
 							} else {
 								this.up = false
@@ -56,7 +68,6 @@ export default {
 
 								setTimeout(() => {
 									this.blink = false
-									console.log('setTimeout сработал')
 									console.log('end', id)
 									resolve()
 								}, 3000)
@@ -64,16 +75,16 @@ export default {
 								clearInterval(timerUp)
 							}
 							
-							this.heightAboveGround = floor
+							this.heightAboveGround[liftIndex] = floor
 						}, 20);
 						
-					} else if (this.heightAboveGround > DestinationFloor) {
+					} else if (this.heightAboveGround[liftIndex] > DestinationFloor) {
 
 						let timerDown = setInterval(() => {
 
 							this.down = true
 
-							if(this.heightAboveGround !== DestinationFloor) {
+							if(this.heightAboveGround[liftIndex] !== DestinationFloor) {
 								floor -= 2
 							} else {
 								this.down = false
@@ -81,16 +92,14 @@ export default {
 
 								setTimeout(() => {
 									this.blink = false
-									console.log('setTimeout сработал')
 									console.log('end', id)
 									resolve();
 								}, 3000);
 
 								clearInterval(timerDown)
-								
 							}
 							
-							this.heightAboveGround = floor
+							this.heightAboveGround[liftIndex] = floor
 						}, 20);
 					}
 				});
