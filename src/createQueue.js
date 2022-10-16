@@ -10,25 +10,16 @@ const createQueue = (foo) => {
         pending = false;
         if (queue.length) start();
       });
+
+      console.log(`params: ${params}`)
     };
   
     return (...params) => {
       queue.push(params);
-  
+      console.log(`queue: ${queue}`)
       if (!pending) start();
     };
 };
   
 export default createQueue;
-
-
-// let x = 20;
-// let array = [50, 10, 20, 80, 30];
-// let newArr = [...array]
-// let closest = newArr.sort( (a, b) => Math.abs(x - a) - Math.abs(x - b) )[0];
-
-// console.log(closest)
-
-// console.log(array.indexOf(closest))
-
   
