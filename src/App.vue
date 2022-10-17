@@ -12,19 +12,15 @@
 		:down="down[1]" 
 		:blink="blink[1]"/>
 	<LiftButtons 
-		:changeFloor="changeFloor" 
-		:inputValue="inputValue" 
+		:changeFloor="changeFloor"
 		:floorCount="floorCount"
 		:heightAboveGround="heightAboveGround"
-		:activeBtn="activeBtn"
-		:changeColor="changeColor"
 		:up="up"
 		:down="down"
 		:changeFloorWithoutQueue="changeFloorWithoutQueue"/>
-</template>
+</template> 
 
 <script>
-
 import LiftMine from './components/LiftMine.vue'
 import LiftButtons from './components/LiftButtons.vue'
 import createQueue from '@/createQueue'
@@ -33,13 +29,13 @@ export default {
 	name: 'App',
 	data() {
 		return {
-			floorCount: 6,
-			liftCount: 2,
-			heightAboveGround: [100, 0],
-			up: [false, false],
-			down: [false, false],
-			blink: [false, false],
-			activeBtn: false
+			floorCount: 6, // Количество этажей
+			heightAboveGround: [0, 0], // Указывается значение в пикселях кратное 100
+			up: [false, false], // Нахождение лифта в движении вверх
+			down: [false, false], // Нахождение лифта в движении вниз
+			blink: [false, false], // Мигание лифта
+			// Для увеличения количества шахт нужно добавлять еще по одному элементу в массивы
+			// А также добавить новый компонент LiftMine в template у которого, где нужно, будет стоять индекс согласно его номеру (счет с нуля)
 		}
 	},
 	components: {
@@ -47,60 +43,37 @@ export default {
 		LiftButtons
 	},
 	methods: {
-		inputValue(item) {
-			console.log(item)
-		},
-		changeColor() {
-			this.activeBtn = true
-			// event.target.style.background = this.activeBtn == true ? '#ff1111' : '#ffadad'
-		},
-		changeFloorWithoutQueue(id, liftIndex) {
+		changeFloorWithoutQueue(id, liftIndex) { // работает одновременное движение, но не работает очередь
 
-			let upFree = [...this.up]
-			let downFree = [...this.down]
-
-			console.log('a', upFree)
-
-			upFree.reduce((a, e, i) => {
-				if (e === true)
-					a.push(i);
-				return a;
-			}, [])
+			let upFree = [...this.up],
+				downFree = [...this.down]
 
 			let _freeLiftsUp = [...upFree.reduce((a, e, i) => {
 				if (e === false)
 					a.push(i);
 				return a;
-			}, [])]// Индексы свободных лифтов
-
+			}, [])]
 			let _freeLiftsDown = [...downFree.reduce((a, e, i) => {
 				if (e === false)
 					a.push(i);
 				return a;
-			}, [])]
+			}, [])] // Индексы свободных лифтов
 
 			let freeLifts = _freeLiftsUp.filter((obj) => {
 				return _freeLiftsDown.indexOf(obj) >= 0;
 			}); // Массив с индексами свободных лифтов
 
-			console.log('free 1', freeLifts)
-
-			if(this.up[liftIndex] == true || this.down[liftIndex] == true) {
+			if(this.up[liftIndex] == true || this.down[liftIndex] == true || this.blink[liftIndex] == true) {
 
 				let arr = []
-
-				console.log('free 2', freeLifts)
 
 				freeLifts.forEach((item) => {
 					arr.push(this.heightAboveGround[item]) // высоты свободных лифтов
 				})
 
-				let btnHeightAboveGround = (id - 1) * 100
-                
-				let closest = arr.sort( (a, b) => Math.abs(btnHeightAboveGround - a) - Math.abs(btnHeightAboveGround - b) )[0]
-                let idx = this.heightAboveGround.indexOf(closest)
-
-				console.log(idx)
+				let btnHeightAboveGround = (id - 1) * 100,
+					closest = arr.sort( (a, b) => Math.abs(btnHeightAboveGround - a) - Math.abs(btnHeightAboveGround - b) )[0],
+					idx = this.heightAboveGround.indexOf(closest)
 
 				liftIndex = idx
 			}
@@ -113,23 +86,23 @@ export default {
 				let timerUp = setInterval(() => {
 					this.up[liftIndex] = true
 
-					if(this.heightAboveGround[liftIndex] !== DestinationFloor) {
+					if (this.heightAboveGround[liftIndex] !== DestinationFloor) {
 						floor += 2
 					} else {
 						this.up[liftIndex] = false
 						this.blink[liftIndex] = true
-						// localStorage.setItem(`heightAboveGround`, JSON.stringify(this.heightAboveGround));
-						// console.log(typeof localStorage.getItem('heightAboveGround'))
+
+						localStorage.setItem(`heightAboveGround`, JSON.stringify(this.heightAboveGround))
+
 						setTimeout(() => {
 							this.blink[liftIndex] = false
 							this.activeBtn = false
-						}, 1000)
+						}, 3000)
 						
 						clearInterval(timerUp)
 					}
 					
 					this.heightAboveGround[liftIndex] = floor
-					// localStorage.setItem(`heightAboveGround[${liftIndex}]`, this.heightAboveGround[liftIndex]);
 				}, 20);
 				
 			} else if (this.heightAboveGround[liftIndex] > DestinationFloor) {
@@ -143,53 +116,62 @@ export default {
 					} else {
 						this.down[liftIndex] = false
 						this.blink[liftIndex] = true
-						localStorage.setItem(`heightAboveGround`, [...this.heightAboveGround]);
-						console.log(localStorage.getItem('heightAboveGround'))
+						
+						localStorage.setItem(`heightAboveGround`, JSON.stringify(this.heightAboveGround))
+
 						setTimeout(() => {
 							this.blink[liftIndex] = false
 							this.activeBtn = false
-						}, 1000);
+						}, 3000);
 
 						clearInterval(timerDown)
 					}
 					
 					this.heightAboveGround[liftIndex] = floor
-					// localStorage.setItem(`heightAboveGround[${liftIndex}]`, this.heightAboveGround[liftIndex]);
 				}, 20);
 			}
 		}
 	},
 	computed: {
-		changeFloor() {
-
-			// let upBusy = [...this.up]
-			// let downBusy = [...this.down]
-
-			// upBusy.reduce((a, e, i) => {
-			// 	if (e === true)
-			// 		a.push(i);
-			// 	return a;
-			// }, [])
-
-			// let _freeLifts = [...upBusy.reduce((a, e, i) => {
-			// 	if (e === false)
-			// 		a.push(i);
-			// 	return a;
-			// }, []), ...downBusy.reduce((a, e, i) => {
-			// 	if (e === false)
-			// 		a.push(i);
-			// 	return a;
-			// }, [])]// Индексы занятых лифтов
-
-			// let freeLifts = [...new Set(_freeLifts)]
-
-			// console.log(freeLifts)
-
+		changeFloor() { // Работает очередь, но не работает одновременное движение с несколькими лифтами, если лифт один, то все работает отлично, вызов происходит в LiftButtons в методе CompareLifts
 			return createQueue((id, liftIndex) => {
 				console.log("start", id);
 				console.log(id)
 				return new Promise((resolve) => {
-				// actions...
+				
+					let upFree = [...this.up]
+					let downFree = [...this.down]
+
+					let _freeLiftsUp = [...upFree.reduce((a, e, i) => {
+						if (e === false)
+							a.push(i);
+						return a;
+					}, [])]
+					let _freeLiftsDown = [...downFree.reduce((a, e, i) => {
+						if (e === false)
+							a.push(i);
+						return a;
+					}, [])] // Индексы свободных лифтов
+
+					let freeLifts = _freeLiftsUp.filter((obj) => {
+						return _freeLiftsDown.indexOf(obj) >= 0;
+					}); // Массив с индексами свободных лифтов
+
+					if(this.up[liftIndex] == true || this.down[liftIndex] == true || this.blink[liftIndex] == true) {
+
+						let arr = []
+
+						freeLifts.forEach((item) => {
+							arr.push(this.heightAboveGround[item]) // высоты свободных лифтов
+						})
+
+						let btnHeightAboveGround = (id - 1) * 100
+						let closest = arr.sort( (a, b) => Math.abs(btnHeightAboveGround - a) - Math.abs(btnHeightAboveGround - b) )[0]
+						let idx = this.heightAboveGround.indexOf(closest)
+
+						liftIndex = idx
+					}
+
 					let DestinationFloor = (id - 1) * 100
 					let floor = this.heightAboveGround[liftIndex]
 
@@ -203,8 +185,7 @@ export default {
 							} else {
 								this.up[liftIndex] = false
 								this.blink[liftIndex] = true
-								localStorage.setItem(`heightAboveGround`, JSON.stringify(this.heightAboveGround));
-								console.log(typeof localStorage.getItem('heightAboveGround'))
+								// localStorage.setItem(`heightAboveGround`, JSON.stringify(this.heightAboveGround))
 								setTimeout(() => {
 									this.blink[liftIndex] = false
 									this.activeBtn = false
@@ -216,7 +197,6 @@ export default {
 							}
 							
 							this.heightAboveGround[liftIndex] = floor
-							// localStorage.setItem(`heightAboveGround[${liftIndex}]`, this.heightAboveGround[liftIndex]);
 						}, 20);
 						
 					} else if (this.heightAboveGround[liftIndex] > DestinationFloor) {
@@ -230,8 +210,7 @@ export default {
 							} else {
 								this.down[liftIndex] = false
 								this.blink[liftIndex] = true
-								localStorage.setItem(`heightAboveGround`, [...this.heightAboveGround]);
-								console.log(localStorage.getItem('heightAboveGround'))
+								// localStorage.setItem(`heightAboveGround`, [...this.heightAboveGround])
 								setTimeout(() => {
 									this.blink[liftIndex] = false
 									this.activeBtn = false
@@ -243,10 +222,8 @@ export default {
 							}
 							
 							this.heightAboveGround[liftIndex] = floor
-							// localStorage.setItem(`heightAboveGround[${liftIndex}]`, this.heightAboveGround[liftIndex]);
 						}, 20);
 					}
-					
 				});
 			});
 		}

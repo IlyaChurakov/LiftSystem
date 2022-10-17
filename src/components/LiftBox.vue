@@ -34,9 +34,6 @@
             down: Boolean,
             blink: Boolean
         },
-        methods: {
-            
-        },
         computed: {
             getCounter() {
                 return Math.round(this.heightAboveGround / 100) + 1
@@ -86,7 +83,6 @@
     .arrow-down {
         display: none;
     }
-
     @keyframes blink {
         0% { background-color: #c25205; }
         50% { background-color: #ffb380; }

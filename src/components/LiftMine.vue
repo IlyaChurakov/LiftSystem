@@ -16,8 +16,6 @@
             ></div>
         </div>
 
-        <!-- <LiftButtons :floorCount="floorCount" :changeFloor="changeFloor"/> -->
-
         <LiftBox :heightAboveGround="heightAboveGround" :up="up" :down="down" :blink="blink"/>
     </div>
 </template>
@@ -25,8 +23,6 @@
 <script>
 
     import LiftBox from './LiftBox.vue'
-    // import LiftButtons from './LiftButtons.vue'
-    
 
     export default {
         props: {
@@ -52,12 +48,10 @@
                     arr.push(start)
                 }
                 return arr
-            },
-            //changeFloor
+            }
         },
         components: {
-            LiftBox,
-            // LiftButtons
+            LiftBox
         }
     }
 </script>
