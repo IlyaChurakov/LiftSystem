@@ -22,3 +22,7 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+Инфо:
+
+Приложение системы лифтов на Vue.js, разделенное на четыре компонента, находящихся в разных файлах - лифт, шахта лифта, кнопки и родительский компонент App 
