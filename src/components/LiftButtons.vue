@@ -38,8 +38,8 @@
                 let idx = this.heightAboveGround.indexOf(closest)
 
                 this.indexOfClosestLift = idx
-                // this.changeFloor(btn, this.indexOfClosestLift)
-                this.changeFloorWithoutQueue(btn, this.indexOfClosestLift)
+                this.changeFloor(btn, this.indexOfClosestLift)
+                // this.changeFloorWithoutQueue(btn, this.indexOfClosestLift)
             },
         },
         computed: {

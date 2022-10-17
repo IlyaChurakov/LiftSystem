@@ -5,12 +5,7 @@
 		:up="up[0]" 
 		:down="down[0]" 
 		:blink="blink[0]"/>
-	<LiftMine 
-		:floorCount="floorCount" 
-		:heightAboveGround="heightAboveGround[1]" 
-		:up="up[1]" 
-		:down="down[1]" 
-		:blink="blink[1]"/>
+	
 	<LiftButtons 
 		:changeFloor="changeFloor"
 		:floorCount="floorCount"
@@ -30,10 +25,10 @@ export default {
 	data() {
 		return {
 			floorCount: 6, // Количество этажей
-			heightAboveGround: [0, 0], // Указывается значение в пикселях кратное 100
-			up: [false, false], // Нахождение лифта в движении вверх
-			down: [false, false], // Нахождение лифта в движении вниз
-			blink: [false, false], // Мигание лифта
+			heightAboveGround: [0], // Указывается значение в пикселях кратное 100 // JSON.parse(localStorage.getItem('heightAboveGround')).length > 0 ? JSON.parse(localStorage.getItem('heightAboveGround')) : [0]
+			up: [false], // Нахождение лифта в движении вверх
+			down: [false], // Нахождение лифта в движении вниз
+			blink: [false], // Мигание лифта
 			// Для увеличения количества шахт нужно добавлять еще по одному элементу в массивы
 			// А также добавить новый компонент LiftMine в template у которого, где нужно, будет стоять индекс согласно его номеру (счет с нуля)
 		}
@@ -185,13 +180,13 @@ export default {
 							} else {
 								this.up[liftIndex] = false
 								this.blink[liftIndex] = true
-								// localStorage.setItem(`heightAboveGround`, JSON.stringify(this.heightAboveGround))
+								localStorage.setItem(`heightAboveGround`, JSON.stringify(this.heightAboveGround))
 								setTimeout(() => {
 									this.blink[liftIndex] = false
 									this.activeBtn = false
 									console.log('end', id)
 									resolve()
-								}, 1000)
+								}, 3000)
 								
 								clearInterval(timerUp)
 							}
@@ -210,13 +205,13 @@ export default {
 							} else {
 								this.down[liftIndex] = false
 								this.blink[liftIndex] = true
-								// localStorage.setItem(`heightAboveGround`, [...this.heightAboveGround])
+								localStorage.setItem(`heightAboveGround`, [...this.heightAboveGround])
 								setTimeout(() => {
 									this.blink[liftIndex] = false
 									this.activeBtn = false
 									console.log('end', id)
 									resolve();
-								}, 1000);
+								}, 3000);
 
 								clearInterval(timerDown)
 							}
